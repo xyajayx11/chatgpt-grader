@@ -1,10 +1,14 @@
 document.getElementById("gradeButton").addEventListener("click", function () {
+    // Get the essay input from the textarea
     const essay = document.getElementById("essayInput").value;
+
+    // Calculate the scores using the gradeEssay function
     const scores = gradeEssay(essay);
 
-    document.getElementById("pfoScore").textContent = scores.pfo;
-    document.getElementById("eeScore").textContent = scores.ee;
-    document.getElementById("cScore").textContent = scores.c;
+    // Update the results section in the HTML
+    document.getElementById("pfoScore").textContent = scores.purposeFocusOrganization;
+    document.getElementById("eeScore").textContent = scores.evidenceElaboration;
+    document.getElementById("cScore").textContent = scores.conventions;
 });
 
 // Function to calculate scores based on OST rubric
@@ -56,17 +60,3 @@ function gradeEssay(essay) {
     // Return calculated scores
     return scores;
 }
-
-// Example usage
-const essay = `
-    This essay includes a clear theme and is well-organized.
-    It provides strong evidence and thorough elaboration.
-    There are minor spelling error and grammar error issues.
-`;
-
-const results = gradeEssay(essay);
-
-// Display scores
-console.log("Purpose, Focus, Organization: ", results.purposeFocusOrganization, "/ 4");
-console.log("Evidence and Elaboration: ", results.evidenceElaboration, "/ 4");
-console.log("Conventions: ", results.conventions, "/ 2");
