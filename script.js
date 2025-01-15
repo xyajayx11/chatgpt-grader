@@ -1,37 +1,49 @@
+document.getElementById("gradeButton").addEventListener("click", function () {
+    // Get the essay input from the textarea
+    const essay = document.getElementById("essayInput").value.trim();
+
+    // Calculate the scores using the gradeEssay function
+    const scores = gradeEssay(essay);
+
+    // Update the results section in the HTML
+    document.getElementById("pfoScore").textContent = scores.purposeFocusOrganization || "-";
+    document.getElementById("eeScore").textContent = scores.evidenceElaboration || "-";
+    document.getElementById("cScore").textContent = scores.conventions || "-";
+});
+
+// Function to calculate scores based on OST rubric
 function gradeEssay(essay) {
     const scores = {
-        purposeFocusOrganization: 0,
-        evidenceElaboration: 0,
-        conventions: 0
+        purposeFocusOrganization: 0, // Out of 4
+        evidenceElaboration: 0,     // Out of 4
+        conventions: 0              // Out of 2
     };
 
-    const essayLower = essay.toLowerCase();
-
     // Analyze Purpose, Focus, and Organization (PFO)
-    if (/clear\s+theme|well[-\s]*organized/.test(essayLower)) {
+    if (essay.includes("clear theme") && essay.includes("well-organized")) {
         scores.purposeFocusOrganization = 4;
-    } else if (/basic\s+focus|attempts\s+organization/.test(essayLower)) {
+    } else if (essay.includes("attempts organization") || essay.includes("basic focus")) {
         scores.purposeFocusOrganization = 3;
-    } else if (/weak\s+organization|unclear\s+theme/.test(essayLower)) {
+    } else if (essay.includes("unclear theme") || essay.includes("weak organization")) {
         scores.purposeFocusOrganization = 2;
-    } else if (/lacks\s+organization|little\s+focus/.test(essayLower)) {
+    } else if (essay.includes("little focus") || essay.includes("lacks organization")) {
         scores.purposeFocusOrganization = 1;
     }
 
     // Analyze Evidence and Elaboration (EE)
-    if (/strong\s+evidence|thorough\s+elaboration/.test(essayLower)) {
+    if (essay.includes("strong evidence") && essay.includes("thorough elaboration")) {
         scores.evidenceElaboration = 4;
-    } else if (/some\s+evidence|basic\s+elaboration/.test(essayLower)) {
+    } else if (essay.includes("some evidence") || essay.includes("basic elaboration")) {
         scores.evidenceElaboration = 3;
-    } else if (/limited\s+evidence|weak\s+elaboration/.test(essayLower)) {
+    } else if (essay.includes("limited evidence") || essay.includes("weak elaboration")) {
         scores.evidenceElaboration = 2;
-    } else if (/minimal\s+evidence|little\s+elaboration/.test(essayLower)) {
+    } else if (essay.includes("minimal evidence") || essay.includes("little elaboration")) {
         scores.evidenceElaboration = 1;
     }
 
     // Analyze Conventions (C)
-    const spellingErrors = (essay.match(/spelling\s+error/gi) || []).length;
-    const grammarErrors = (essay.match(/grammar\s+error/gi) || []).length;
+    const spellingErrors = (essay.match(/spelling error/g) || []).length;
+    const grammarErrors = (essay.match(/grammar error/g) || []).length;
 
     if (spellingErrors + grammarErrors <= 2) {
         scores.conventions = 2;
@@ -39,5 +51,6 @@ function gradeEssay(essay) {
         scores.conventions = 1;
     }
 
+    // Return calculated scores
     return scores;
 }
