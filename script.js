@@ -14,7 +14,7 @@ document.getElementById("gradeButton").addEventListener("click", function () {
     document.getElementById("cScore").textContent = scores.conventions || "-";
 });
 
-// Function to calculate scores based on OST rubric
+// Function to calculate scores based on the rubric
 function gradeEssay(essay) {
     const scores = {
         purposeFocusOrganization: 0, // Out of 4
@@ -22,41 +22,39 @@ function gradeEssay(essay) {
         conventions: 0              // Out of 2
     };
 
-    // Analyze Purpose, Focus, and Organization (PFO)
-    // Check if the essay has an introduction, body, and conclusion
-    if (essay.includes("introduction") && essay.includes("conclusion") && essay.split(".").length > 5) {
-        scores.purposeFocusOrganization = 4; // Well-organized with clear focus
-    } else if (essay.includes("introduction") && essay.split(".").length > 3) {
-        scores.purposeFocusOrganization = 3; // Clear organization but could improve
-    } else if (essay.includes("focus") || essay.split(".").length > 1) {
-        scores.purposeFocusOrganization = 2; // Weak organization or unclear theme
+    // PFO: Purpose, Focus, and Organization
+    if (essay.includes("thesis") && essay.split(".").length > 5 && essay.includes("introduction") && essay.includes("conclusion") && essay.includes("transitions")) {
+        scores.purposeFocusOrganization = 4; // Excellent organization, focused on task
+    } else if (essay.includes("thesis") && essay.split(".").length > 3 && (essay.includes("introduction") || essay.includes("conclusion"))) {
+        scores.purposeFocusOrganization = 3; // Good organization, some minor issues
+    } else if (essay.includes("thesis") || essay.split(".").length > 2) {
+        scores.purposeFocusOrganization = 2; // Some focus and structure, but lacking clarity
     } else {
-        scores.purposeFocusOrganization = 1; // Very little structure or organization
+        scores.purposeFocusOrganization = 1; // Minimal structure, unclear thesis
     }
 
-    // Analyze Evidence and Elaboration (EE)
-    // Check for use of examples and elaboration
-    if (essay.includes("example") && essay.includes("detailed")) {
-        scores.evidenceElaboration = 4; // Strong evidence and detailed elaboration
-    } else if (essay.includes("example") || essay.includes("explains")) {
-        scores.evidenceElaboration = 3; // Some evidence with basic elaboration
-    } else if (essay.includes("little evidence") || essay.includes("brief explanation")) {
-        scores.evidenceElaboration = 2; // Limited evidence with weak elaboration
+    // EE: Evidence and Elaboration
+    if (essay.includes("example") && essay.includes("evidence") && essay.includes("detailed") && essay.includes("quotations")) {
+        scores.evidenceElaboration = 4; // Strong evidence with elaboration and examples
+    } else if (essay.includes("example") && essay.includes("evidence") && essay.split(".").length > 5) {
+        scores.evidenceElaboration = 3; // Adequate evidence, some elaboration
+    } else if (essay.includes("evidence") || essay.includes("details")) {
+        scores.evidenceElaboration = 2; // Minimal evidence and general elaboration
     } else {
-        scores.evidenceElaboration = 1; // Minimal or no evidence provided
+        scores.evidenceElaboration = 1; // Very little or no evidence or elaboration
     }
 
-    // Analyze Conventions (C)
-    // Check for grammar and spelling (basic error count)
+    // C: Conventions
     const spellingErrors = (essay.match(/\b\w+\b/g) || []).length - essay.length; // Check for spelling errors
     const grammarErrors = (essay.match(/grammar/g) || []).length; // Count occurrences of grammar errors
 
     if (spellingErrors + grammarErrors <= 2) {
-        scores.conventions = 2; // Few to no errors
+        scores.conventions = 2; // Few errors, doesn't hinder readability
     } else if (spellingErrors + grammarErrors <= 4) {
-        scores.conventions = 1; // Some errors present
+        scores.conventions = 1; // Some errors, minor impact on readability
+    } else {
+        scores.conventions = 0; // Frequent and severe errors that obscure meaning
     }
 
-    // Return calculated scores
     return scores;
 }
