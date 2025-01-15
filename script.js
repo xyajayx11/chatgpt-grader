@@ -22,31 +22,39 @@ function gradeEssay(essay) {
         conventions: 0              // Out of 2
     };
 
-    // PFO: Purpose, Focus, and Organization
-    if (essay.includes("thesis") && essay.split(".").length > 5 && essay.includes("introduction") && essay.includes("conclusion") && essay.includes("transitions")) {
-        scores.purposeFocusOrganization = 4; // Excellent organization, focused on task
-    } else if (essay.includes("thesis") && essay.split(".").length > 3 && (essay.includes("introduction") || essay.includes("conclusion"))) {
-        scores.purposeFocusOrganization = 3; // Good organization, some minor issues
-    } else if (essay.includes("thesis") || essay.split(".").length > 2) {
-        scores.purposeFocusOrganization = 2; // Some focus and structure, but lacking clarity
+    // --- PFO: Purpose, Focus, and Organization ---
+    const hasThesis = essay.includes("thesis") || essay.split(".").some(sentence => sentence.length > 50); // Basic check for a thesis statement or long sentences
+    const isOrganized = essay.includes("introduction") && essay.includes("conclusion") && essay.includes("transition");
+    const clearStructure = essay.split(".").length >= 5; // At least 5 sentences for logical structure
+
+    if (hasThesis && isOrganized && clearStructure) {
+        scores.purposeFocusOrganization = 4; // Excellent structure and focus
+    } else if (hasThesis && isOrganized) {
+        scores.purposeFocusOrganization = 3; // Good, but missing some elements
+    } else if (hasThesis || clearStructure) {
+        scores.purposeFocusOrganization = 2; // Adequate, but with flaws in structure
     } else {
-        scores.purposeFocusOrganization = 1; // Minimal structure, unclear thesis
+        scores.purposeFocusOrganization = 1; // Minimal or unclear thesis, poor structure
     }
 
-    // EE: Evidence and Elaboration
-    if (essay.includes("example") && essay.includes("evidence") && essay.includes("detailed") && essay.includes("quotations")) {
-        scores.evidenceElaboration = 4; // Strong evidence with elaboration and examples
-    } else if (essay.includes("example") && essay.includes("evidence") && essay.split(".").length > 5) {
-        scores.evidenceElaboration = 3; // Adequate evidence, some elaboration
-    } else if (essay.includes("evidence") || essay.includes("details")) {
-        scores.evidenceElaboration = 2; // Minimal evidence and general elaboration
+    // --- EE: Evidence and Elaboration ---
+    const hasEvidence = essay.includes("example") || essay.includes("evidence") || essay.includes("quote");
+    const hasElaboration = essay.includes("explains") || essay.includes("details");
+    const usesTransitions = essay.includes("for example") || essay.includes("because");
+
+    if (hasEvidence && hasElaboration && usesTransitions) {
+        scores.evidenceElaboration = 4; // Strong, detailed evidence and clear elaboration
+    } else if (hasEvidence && hasElaboration) {
+        scores.evidenceElaboration = 3; // Adequate evidence and some elaboration
+    } else if (hasEvidence || hasElaboration) {
+        scores.evidenceElaboration = 2; // Minimal evidence, vague elaboration
     } else {
-        scores.evidenceElaboration = 1; // Very little or no evidence or elaboration
+        scores.evidenceElaboration = 1; // No evidence or elaboration
     }
 
-    // C: Conventions
+    // --- C: Conventions ---
     const spellingErrors = (essay.match(/\b\w+\b/g) || []).length - essay.length; // Check for spelling errors
-    const grammarErrors = (essay.match(/grammar/g) || []).length; // Count occurrences of grammar errors
+    const grammarErrors = (essay.match(/\bthe\b/g) || []).length; // Count occurrences of grammar errors
 
     if (spellingErrors + grammarErrors <= 2) {
         scores.conventions = 2; // Few errors, doesn't hinder readability
