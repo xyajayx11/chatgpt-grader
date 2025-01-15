@@ -1,16 +1,24 @@
-document.getElementById("gradeButton").addEventListener("click", function () {
-    // Get the essay input from the textarea
-    const essay = document.getElementById("essayInput").value.trim();
-    console.log("Essay Input: ", essay); // Debugging log to check the input
+// Ensure the DOM is fully loaded before adding event listeners
+document.addEventListener("DOMContentLoaded", function () {
+    document.getElementById("gradeButton").addEventListener("click", function () {
+        // Get the essay input from the textarea
+        const essay = document.getElementById("essayInput").value.trim();
+        console.log("Essay Input: ", essay); // Debugging log to check the input
 
-    // Calculate the scores using the gradeEssay function
-    const scores = gradeEssay(essay);
-    console.log("Calculated Scores: ", scores); // Debugging log to check the output
+        if (essay === "") {
+            alert("Please enter an essay to grade.");
+            return;
+        }
 
-    // Update the results section in the HTML
-    document.getElementById("pfoScore").textContent = scores.purposeFocusOrganization || "-";
-    document.getElementById("eeScore").textContent = scores.evidenceElaboration || "-";
-    document.getElementById("cScore").textContent = scores.conventions || "-";
+        // Calculate the scores using the gradeEssay function
+        const scores = gradeEssay(essay);
+        console.log("Calculated Scores: ", scores); // Debugging log to check the output
+
+        // Update the results section in the HTML
+        document.getElementById("pfoScore").textContent = scores.purposeFocusOrganization || "-";
+        document.getElementById("eeScore").textContent = scores.evidenceElaboration || "-";
+        document.getElementById("cScore").textContent = scores.conventions || "-";
+    });
 });
 
 // Function to calculate scores based on OST rubric
