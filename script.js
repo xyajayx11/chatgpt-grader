@@ -1,25 +1,25 @@
 document.getElementById("gradeButton").addEventListener("click", function () {
-    // Get the essay input from the textarea
     const essay = document.getElementById("essayInput").value.trim();
 
-    // Calculate the scores using the gradeEssay function
+    if (!essay) {
+        alert("Please enter an essay to grade!");
+        return;
+    }
+
     const scores = gradeEssay(essay);
 
-    // Update the results section in the HTML
     document.getElementById("pfoScore").textContent = scores.purposeFocusOrganization || "-";
     document.getElementById("eeScore").textContent = scores.evidenceElaboration || "-";
     document.getElementById("cScore").textContent = scores.conventions || "-";
 });
 
-// Function to calculate scores based on OST rubric
 function gradeEssay(essay) {
     const scores = {
-        purposeFocusOrganization: 0, // Out of 4
-        evidenceElaboration: 0,     // Out of 4
-        conventions: 0              // Out of 2
+        purposeFocusOrganization: "-",
+        evidenceElaboration: "-",
+        conventions: "-"
     };
 
-    // Analyze Purpose, Focus, and Organization (PFO)
     if (essay.includes("clear theme") && essay.includes("well-organized")) {
         scores.purposeFocusOrganization = 4;
     } else if (essay.includes("attempts organization") || essay.includes("basic focus")) {
@@ -30,7 +30,6 @@ function gradeEssay(essay) {
         scores.purposeFocusOrganization = 1;
     }
 
-    // Analyze Evidence and Elaboration (EE)
     if (essay.includes("strong evidence") && essay.includes("thorough elaboration")) {
         scores.evidenceElaboration = 4;
     } else if (essay.includes("some evidence") || essay.includes("basic elaboration")) {
@@ -41,9 +40,8 @@ function gradeEssay(essay) {
         scores.evidenceElaboration = 1;
     }
 
-    // Analyze Conventions (C)
-    const spellingErrors = (essay.match(/spelling error/g) || []).length;
-    const grammarErrors = (essay.match(/grammar error/g) || []).length;
+    const spellingErrors = (essay.match(/spelling\s+error/gi) || []).length;
+    const grammarErrors = (essay.match(/grammar\s+error/gi) || []).length;
 
     if (spellingErrors + grammarErrors <= 2) {
         scores.conventions = 2;
@@ -51,6 +49,5 @@ function gradeEssay(essay) {
         scores.conventions = 1;
     }
 
-    // Return calculated scores
     return scores;
 }
