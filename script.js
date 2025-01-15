@@ -1,14 +1,14 @@
 document.getElementById("gradeButton").addEventListener("click", function () {
     // Get the essay input from the textarea
-    const essay = document.getElementById("essayInput").value;
+    const essay = document.getElementById("essayInput").value.trim();
 
     // Calculate the scores using the gradeEssay function
     const scores = gradeEssay(essay);
 
     // Update the results section in the HTML
-    document.getElementById("pfoScore").textContent = scores.purposeFocusOrganization;
-    document.getElementById("eeScore").textContent = scores.evidenceElaboration;
-    document.getElementById("cScore").textContent = scores.conventions;
+    document.getElementById("pfoScore").textContent = scores.purposeFocusOrganization || "-";
+    document.getElementById("eeScore").textContent = scores.evidenceElaboration || "-";
+    document.getElementById("cScore").textContent = scores.conventions || "-";
 });
 
 // Function to calculate scores based on OST rubric
@@ -28,8 +28,6 @@ function gradeEssay(essay) {
         scores.purposeFocusOrganization = 2;
     } else if (essay.includes("little focus") || essay.includes("lacks organization")) {
         scores.purposeFocusOrganization = 1;
-    } else {
-        scores.purposeFocusOrganization = 0;
     }
 
     // Analyze Evidence and Elaboration (EE)
@@ -41,8 +39,6 @@ function gradeEssay(essay) {
         scores.evidenceElaboration = 2;
     } else if (essay.includes("minimal evidence") || essay.includes("little elaboration")) {
         scores.evidenceElaboration = 1;
-    } else {
-        scores.evidenceElaboration = 0;
     }
 
     // Analyze Conventions (C)
@@ -53,8 +49,6 @@ function gradeEssay(essay) {
         scores.conventions = 2;
     } else if (spellingErrors + grammarErrors <= 4) {
         scores.conventions = 1;
-    } else {
-        scores.conventions = 0;
     }
 
     // Return calculated scores
