@@ -1,9 +1,11 @@
 document.getElementById("gradeButton").addEventListener("click", function () {
     // Get the essay input from the textarea
     const essay = document.getElementById("essayInput").value.trim();
+    console.log("Essay Input: ", essay); // Debugging log to check the input
 
     // Calculate the scores using the gradeEssay function
     const scores = gradeEssay(essay);
+    console.log("Calculated Scores: ", scores); // Debugging log to check the output
 
     // Update the results section in the HTML
     document.getElementById("pfoScore").textContent = scores.purposeFocusOrganization || "-";
