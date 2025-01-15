@@ -1,20 +1,17 @@
 document.getElementById("gradeButton").addEventListener("click", function () {
-    // Get the essay input from the textarea
     const essay = document.getElementById("essayInput").value.trim();
 
-    // Calculate the scores using the gradeEssay function
     const scores = gradeEssay(essay);
 
-    // Log the scores to check if they are calculated
-    console.log("Calculated scores:", scores);
+    console.log("Calculated scores:", scores); // Log to check the values
 
-    // Update the results section in the HTML
+    // Display the calculated scores
     document.getElementById("pfoScore").textContent = scores.purposeFocusOrganization || "-";
     document.getElementById("eeScore").textContent = scores.evidenceElaboration || "-";
     document.getElementById("cScore").textContent = scores.conventions || "-";
 });
 
-// Function to calculate scores based on the rubric
+// Function to grade the essay
 function gradeEssay(essay) {
     const scores = {
         purposeFocusOrganization: 0, // Out of 4
@@ -23,46 +20,73 @@ function gradeEssay(essay) {
     };
 
     // --- PFO: Purpose, Focus, and Organization ---
-    const hasThesis = essay.includes("thesis") || essay.split(".").some(sentence => sentence.length > 50); // Basic check for a thesis statement or long sentences
-    const isOrganized = essay.includes("introduction") && essay.includes("conclusion") && essay.includes("transition");
-    const clearStructure = essay.split(".").length >= 5; // At least 5 sentences for logical structure
+    const thesisPattern = /(\bthesis\b|\bmain argument\b|\bcentral claim\b)/i; // Match common thesis words
+    const bodyPattern = /\b(body|paragraph)\b/i; // Basic body structure check
+    const introConclusion = /\b(introduction|conclusion)\b/i; // Simple intro/conclusion check
+    const transitions = /\b(therefore|however|in conclusion|for example|first|next|finally)\b/i; // Transitional phrases
 
-    if (hasThesis && isOrganized && clearStructure) {
-        scores.purposeFocusOrganization = 4; // Excellent structure and focus
-    } else if (hasThesis && isOrganized) {
-        scores.purposeFocusOrganization = 3; // Good, but missing some elements
-    } else if (hasThesis || clearStructure) {
-        scores.purposeFocusOrganization = 2; // Adequate, but with flaws in structure
+    const hasThesis = thesisPattern.test(essay);
+    const hasIntro = introConclusion.test(essay);
+    const hasBody = bodyPattern.test(essay);
+    const hasTransitions = transitions.test(essay);
+    const paragraphCount = essay.split("\n").length; // Estimate number of paragraphs
+
+    // Grade PFO based on rubric
+    if (hasThesis && hasIntro && hasBody && hasTransitions && paragraphCount >= 3) {
+        scores.purposeFocusOrganization = 4;
+    } else if (hasThesis && hasIntro && hasBody) {
+        scores.purposeFocusOrganization = 3;
+    } else if (hasThesis || hasIntro) {
+        scores.purposeFocusOrganization = 2;
     } else {
-        scores.purposeFocusOrganization = 1; // Minimal or unclear thesis, poor structure
+        scores.purposeFocusOrganization = 1;
     }
 
     // --- EE: Evidence and Elaboration ---
-    const hasEvidence = essay.includes("example") || essay.includes("evidence") || essay.includes("quote");
-    const hasElaboration = essay.includes("explains") || essay.includes("details");
-    const usesTransitions = essay.includes("for example") || essay.includes("because");
+    const evidencePattern = /\b(example|evidence|fact|quote|due to)\b/i; // Matches evidence-related words
+    const elaborationPattern = /\b(explains|shows|demonstrates|because|therefore)\b/i; // Checks for elaboration phrases
+    const relatedEvidence = essay.split(".").filter(sentence => evidencePattern.test(sentence) && elaborationPattern.test(sentence)).length;
 
-    if (hasEvidence && hasElaboration && usesTransitions) {
-        scores.evidenceElaboration = 4; // Strong, detailed evidence and clear elaboration
-    } else if (hasEvidence && hasElaboration) {
-        scores.evidenceElaboration = 3; // Adequate evidence and some elaboration
-    } else if (hasEvidence || hasElaboration) {
-        scores.evidenceElaboration = 2; // Minimal evidence, vague elaboration
+    // Grade EE based on rubric
+    if (relatedEvidence >= 3) {
+        scores.evidenceElaboration = 4;
+    } else if (relatedEvidence >= 2) {
+        scores.evidenceElaboration = 3;
+    } else if (relatedEvidence === 1) {
+        scores.evidenceElaboration = 2;
     } else {
-        scores.evidenceElaboration = 1; // No evidence or elaboration
+        scores.evidenceElaboration = 1;
     }
 
-    // --- C: Conventions ---
-    const spellingErrors = (essay.match(/\b\w+\b/g) || []).length - essay.length; // Check for spelling errors
-    const grammarErrors = (essay.match(/\bthe\b/g) || []).length; // Count occurrences of grammar errors
+    // --- Conventions ---
+    const grammarErrors = countGrammarErrors(essay);
+    const spellingErrors = countSpellingErrors(essay);
 
-    if (spellingErrors + grammarErrors <= 2) {
-        scores.conventions = 2; // Few errors, doesn't hinder readability
-    } else if (spellingErrors + grammarErrors <= 4) {
-        scores.conventions = 1; // Some errors, minor impact on readability
+    // Grade Conventions based on errors
+    if (grammarErrors + spellingErrors <= 2) {
+        scores.conventions = 2;
+    } else if (grammarErrors + spellingErrors <= 4) {
+        scores.conventions = 1;
     } else {
-        scores.conventions = 0; // Frequent and severe errors that obscure meaning
+        scores.conventions = 0;
     }
 
     return scores;
+}
+
+// Helper function to count grammar errors (basic)
+function countGrammarErrors(text) {
+    const sentenceStructure = /\b([A-Za-z]+,)+\b/; // Checks for run-on sentences
+    const repeatedWords = /(\b\w+\b)\s+\1/; // Checks for repeated words
+
+    const errors = (text.match(sentenceStructure) || []).length + (text.match(repeatedWords) || []).length;
+    return errors;
+}
+
+// Helper function to count spelling errors
+function countSpellingErrors(text) {
+    const commonMisspellings = ["their", "there", "they're", "your", "you're"];
+    const wordList = text.split(" ");
+    const errors = wordList.filter(word => commonMisspellings.includes(word.toLowerCase())).length;
+    return errors;
 }
